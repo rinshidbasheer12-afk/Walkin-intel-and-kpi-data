@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Platform } from "react-native";
+import { Platform, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { HapticTab } from "@/components/haptic-tab";
@@ -10,6 +10,8 @@ import { design } from "@/constants/design";
 export default function TabLayout() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const desktop = Platform.OS === "web" && width >= 900;
   const bottomPadding = Platform.OS === "web" ? 10 : Math.max(insets.bottom, 8);
   return (
     <Tabs
@@ -18,7 +20,9 @@ export default function TabLayout() {
         tabBarActiveTintColor: design.colors.blue,
         tabBarInactiveTintColor: colors.muted,
         tabBarButton: HapticTab,
-        tabBarStyle: { height: 62 + bottomPadding, paddingTop: 8, paddingBottom: bottomPadding, backgroundColor: `${colors.surface}F5`, borderTopColor: colors.border, shadowColor: "#93A5BA", shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: -5 }, elevation: 12 },
+        tabBarPosition: desktop ? "left" : "bottom",
+        tabBarVariant: desktop ? "material" : "uikit",
+        tabBarStyle: desktop ? { width: 220, paddingTop: 28, paddingBottom: 28, paddingHorizontal: 12, backgroundColor: `${colors.surface}E8`, borderRightColor: `${colors.border}CC`, borderRightWidth: 1, shadowColor: "#9AAAC0", shadowOpacity: 0.12, shadowRadius: 24, shadowOffset: { width: 6, height: 0 }, elevation: 8 } : { height: 68 + bottomPadding, paddingTop: 10, paddingBottom: bottomPadding, backgroundColor: `${colors.surface}F2`, borderTopColor: `${colors.border}CC`, borderTopWidth: 1, shadowColor: "#9AAAC0", shadowOpacity: 0.14, shadowRadius: 22, shadowOffset: { width: 0, height: -6 }, elevation: 10 },
         tabBarLabelStyle: { fontSize: 10, fontWeight: "800", letterSpacing: 0.1 },
       }}
     >
