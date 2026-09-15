@@ -53,4 +53,12 @@ describe("CycleIntel data model", () => {
     expect(state.walkIns.every((row) => staffIds.has(row.staffId))).toBe(true);
     expect(state.staff.every((person) => person.name && person.joinedAt && typeof person.active === "boolean")).toBe(true);
   });
+
+  it("orders recorded lost-sale reasons by observed frequency", () => {
+    const state = createDemoState();
+    const reasons = lossReasonRows(state.walkIns);
+    expect(reasons.length).toBeGreaterThan(0);
+    expect(reasons[0].value).toBeGreaterThanOrEqual(reasons[reasons.length - 1].value);
+    expect(reasons.reduce((sum, row) => sum + row.value, 0)).toBe(state.walkIns.filter((row) => !row.sold).length);
+  });
 });
