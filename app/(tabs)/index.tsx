@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { WalkInModal } from "@/components/walk-in-modal";
+import { StaffAvatar } from "@/components/staff-avatar";
 import { BarList, MetricCard, Pill, SectionHeader, ui } from "@/components/ui-kit";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { dateKey, staffName, useApp } from "@/lib/app-store";
@@ -23,7 +24,7 @@ export default function HomeScreen() {
   const myRows = todayRows.filter((row) => row.staffId === currentStaff?.id);
 
   return <ScreenContainer className="flex-1" containerClassName="bg-background"><ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-    <View style={ui.between}><View><Text style={[ui.eyebrow, { color: colors.primary }]}>CYCLEINTEL · SALES OS</Text><Text style={[ui.title, { color: colors.foreground, marginTop: 6 }]}>Good morning, {currentStaff?.name ?? "there"}</Text><Text style={[ui.subtitle, { color: colors.muted, marginTop: 5 }]}>Here’s your shop floor pulse for today.</Text></View><View style={[styles.avatar, { backgroundColor: colors.foreground }]}><Text style={{ color: colors.background, fontWeight: "900" }}>{(currentStaff?.name ?? "C").slice(0, 1)}</Text></View></View>
+    <View style={ui.between}><View><Text style={[ui.eyebrow, { color: colors.primary }]}>CYCLEINTEL · SALES OS</Text><Text style={[ui.title, { color: colors.foreground, marginTop: 6 }]}>Good morning, {currentStaff?.name ?? "there"}</Text><Text style={[ui.subtitle, { color: colors.muted, marginTop: 5 }]}>Here’s your shop floor pulse for today.</Text></View><StaffAvatar staff={currentStaff} size={42} /></View>
     {isDemo && <View style={[styles.demoBanner, { backgroundColor: `${colors.warning}18`, borderColor: `${colors.warning}40` }]}><IconSymbol name="exclamationmark.triangle.fill" size={16} color={colors.warning} /><Text style={{ color: colors.warning, fontSize: 11, fontWeight: "800", flex: 1 }}>DEMO DATA · Metrics are ready to explore. Add a real walk-in to start your own dataset.</Text></View>}
     <Pressable onPress={() => setShowNew(true)} style={({ pressed }) => [styles.newButton, { backgroundColor: colors.primary }, pressed && { transform: [{ scale: 0.98 }], opacity: 0.92 }]}><View style={styles.newIcon}><IconSymbol name="plus.circle.fill" size={26} color="#FFFFFF" /></View><View style={{ flex: 1 }}><Text style={styles.newTitle}>New walk-in</Text><Text style={styles.newSubtitle}>Capture the interaction in seconds</Text></View><IconSymbol name="chevron.right" size={23} color="#FFFFFF" /></Pressable>
     <SectionHeader title="Today at a glance" action="Full dashboard" onAction={() => router.push("/dashboard")} />

@@ -25,6 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color }) => <IconSymbol size={23} name="house.fill" color={color} /> }} />
       <Tabs.Screen name="walk-ins" options={{ title: "Walk-ins", tabBarIcon: ({ color }) => <IconSymbol size={23} name="person.2.fill" color={color} /> }} />
       <Tabs.Screen name="dashboard" options={{ title: "Dashboard", tabBarIcon: ({ color }) => <IconSymbol size={23} name="chart.bar.fill" color={color} /> }} />
+      <Tabs.Screen name="team" options={{ title: "Team", tabBarIcon: ({ color }) => <IconSymbol size={23} name="person.3.fill" color={color} /> }} />
       <Tabs.Screen name="follow-ups" options={{ title: "Follow-ups", tabBarIcon: ({ color }) => <IconSymbol size={23} name="calendar.badge.clock" color={color} /> }} />
       <Tabs.Screen name="more" options={{ title: "More", tabBarIcon: ({ color }) => <IconSymbol size={23} name="ellipsis.circle.fill" color={color} /> }} />
     </Tabs>

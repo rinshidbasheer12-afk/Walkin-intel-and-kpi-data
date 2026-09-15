@@ -46,4 +46,11 @@ describe("CycleIntel data model", () => {
     expect(sold.every((row) => typeof row.budget === "number" || row.budget === undefined)).toBe(true);
     expect(recordedRevenue(state.walkIns)).toBe(sold.reduce((sum, row) => sum + (row.budget ?? 0), 0));
   });
+
+  it("keeps every recorded interaction attributable to a known employee", () => {
+    const state = createDemoState();
+    const staffIds = new Set(state.staff.map((person) => person.id));
+    expect(state.walkIns.every((row) => staffIds.has(row.staffId))).toBe(true);
+    expect(state.staff.every((person) => person.name && person.joinedAt && typeof person.active === "boolean")).toBe(true);
+  });
 });

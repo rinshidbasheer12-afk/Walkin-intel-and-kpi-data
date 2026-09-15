@@ -6,6 +6,7 @@ type IconName = ComponentProps<typeof MaterialIcons>["name"];
 const MAPPING: Record<string, IconName> = {
   "house.fill": "home",
   "person.2.fill": "people",
+  "person.3.fill": "groups",
   "chart.bar.fill": "bar-chart",
   "calendar.badge.clock": "event",
   "ellipsis.circle.fill": "more-horiz",
