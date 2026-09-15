@@ -59,6 +59,29 @@ export const displayDate = (date: string) => {
 };
 export const money = (value?: number) => value ? `£${Math.round(value).toLocaleString("en-GB")}` : "—";
 
+export function conversionRate(rows: WalkIn[]) {
+  return rows.length ? Math.round(rows.filter((row) => row.sold).length / rows.length * 1000) / 10 : 0;
+}
+
+export function recordedRevenue(rows: WalkIn[]) {
+  return rows.filter((row) => row.sold && typeof row.budget === "number").reduce((sum, row) => sum + (row.budget ?? 0), 0);
+}
+
+export function lossReasonRows(rows: WalkIn[]) {
+  const lost = rows.filter((row) => !row.sold);
+  return Object.entries(lost.reduce<Record<string, number>>((acc, row) => {
+    const reason = row.lostReason ?? "Not specified";
+    acc[reason] = (acc[reason] ?? 0) + 1;
+    return acc;
+  }, {})).map(([label, value]) => ({ label, value, meta: `${Math.round(value / Math.max(lost.length, 1) * 100)}%` })).sort((a, b) => b.value - a.value);
+}
+
+export function sampleConfidence(rows: WalkIn[]) {
+  if (rows.length < 5) return "early signal";
+  if (rows.length < 15) return "directional signal";
+  return "reliable signal";
+}
+
 const demoStaff: Staff[] = ["Rinshid", "Aaron", "Farhan", "Khalid", "Arbaz", "Ernest", "Ahmed"].map((name, index) => ({
   id: `staff-${name.toLowerCase()}`,
   name,

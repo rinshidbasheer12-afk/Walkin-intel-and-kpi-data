@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { CATEGORIES, createDemoState, dateKey, inRange, toCsv } from "../lib/app-store";
+import { CATEGORIES, conversionRate, createDemoState, dateKey, inRange, lossReasonRows, recordedRevenue, sampleConfidence, toCsv } from "../lib/app-store";
 
 describe("CycleIntel data model", () => {
   it("seeds a realistic demo workspace with distinct entities", () => {
@@ -28,5 +28,13 @@ describe("CycleIntel data model", () => {
     expect(csv.split("\n")[0]).toContain("DATE,TIME,ATTENDED,ENQUIRY");
     expect(csv.split("\n").length).toBe(2);
     expect(csv).toContain("Road");
+  });
+
+  it("derives commercial insights from the existing walk-in records", () => {
+    const state = createDemoState();
+    expect(conversionRate(state.walkIns)).toBeGreaterThan(0);
+    expect(recordedRevenue(state.walkIns)).toBeGreaterThan(0);
+    expect(lossReasonRows(state.walkIns)[0].value).toBeGreaterThan(0);
+    expect(sampleConfidence(state.walkIns)).toBe("reliable signal");
   });
 });
