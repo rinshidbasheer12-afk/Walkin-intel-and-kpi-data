@@ -37,4 +37,13 @@ describe("CycleIntel data model", () => {
     expect(lossReasonRows(state.walkIns)[0].value).toBeGreaterThan(0);
     expect(sampleConfidence(state.walkIns)).toBe("reliable signal");
   });
+
+  it("treats every recorded walk-in as attended and never invents sales value", () => {
+    const state = createDemoState();
+    const sold = state.walkIns.filter((row) => row.sold);
+    expect(state.walkIns.length).toBeGreaterThan(0);
+    expect(state.walkIns.every((row) => row.date && row.time && row.staffId)).toBe(true);
+    expect(sold.every((row) => typeof row.budget === "number" || row.budget === undefined)).toBe(true);
+    expect(recordedRevenue(state.walkIns)).toBe(sold.reduce((sum, row) => sum + (row.budget ?? 0), 0));
+  });
 });
