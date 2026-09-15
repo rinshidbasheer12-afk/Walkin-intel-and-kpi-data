@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { accentTone, densityTokens } from "../lib/appearance";
+import { accentTone, appearanceLabels, densityTokens } from "../lib/appearance";
 
 describe("appearance settings", () => {
   it("softens accents without changing vivid accents", () => {
@@ -13,5 +13,9 @@ describe("appearance settings", () => {
     expect(densityTokens.compact.cardPadding).toBeLessThan(densityTokens.comfortable.cardPadding);
     expect(densityTokens.comfortable.cardPadding).toBeLessThan(densityTokens.airy.cardPadding);
     expect(densityTokens.compact.chartGap).toBeLessThan(densityTokens.airy.chartGap);
+  });
+
+  it("exposes all supported theme modes", () => {
+    expect(Object.keys(appearanceLabels.mode)).toEqual(["light", "dim", "automatic"]);
   });
 });

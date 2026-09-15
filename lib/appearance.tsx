@@ -3,15 +3,17 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from "
 
 export type AccentIntensity = "soft" | "balanced" | "vivid";
 export type UiDensity = "compact" | "comfortable" | "airy";
-export type AppearanceSettings = { accentIntensity: AccentIntensity; density: UiDensity };
+export type AppearanceMode = "light" | "dim" | "automatic";
+export type AppearanceSettings = { accentIntensity: AccentIntensity; density: UiDensity; mode: AppearanceMode };
 
 const STORAGE_KEY = "cycleintel-appearance-v1";
-const DEFAULTS: AppearanceSettings = { accentIntensity: "balanced", density: "comfortable" };
+const DEFAULTS: AppearanceSettings = { accentIntensity: "balanced", density: "comfortable", mode: "automatic" };
 
 type AppearanceContextValue = AppearanceSettings & {
   hydrated: boolean;
   setAccentIntensity: (value: AccentIntensity) => void;
   setDensity: (value: UiDensity) => void;
+  setMode: (value: AppearanceMode) => void;
   resetAppearance: () => void;
 };
 
@@ -39,6 +41,7 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
     hydrated,
     setAccentIntensity: (accentIntensity: AccentIntensity) => setSettings((prev) => ({ ...prev, accentIntensity })),
     setDensity: (density: UiDensity) => setSettings((prev) => ({ ...prev, density })),
+    setMode: (mode: AppearanceMode) => setSettings((prev) => ({ ...prev, mode })),
     resetAppearance: () => setSettings(DEFAULTS),
   }), [hydrated, settings]);
 
@@ -58,6 +61,7 @@ export const densityTokens = {
 } as const;
 
 export const appearanceLabels = {
+  mode: { light: "Light", dim: "Dim", automatic: "Automatic" },
   accentIntensity: { soft: "Soft", balanced: "Balanced", vivid: "Vivid" },
   density: { compact: "Compact", comfortable: "Comfortable", airy: "Airy" },
 } as const;

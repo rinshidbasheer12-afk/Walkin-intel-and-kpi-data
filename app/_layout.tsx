@@ -10,16 +10,16 @@ import "../global.css";
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider>
-        <AppearanceProvider>
+      <AppearanceProvider>
+        <ThemeProvider>
           <AppProvider>
             <StatusBar style="dark" />
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(tabs)" />
             </Stack>
           </AppProvider>
-        </AppearanceProvider>
-      </ThemeProvider>
+        </ThemeProvider>
+      </AppearanceProvider>
     </GestureHandlerRootView>
   );
 }
