@@ -8,9 +8,9 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 import { CATEGORIES, DateRange, dateKey, inRange, lossReasonRows, money, rangeLabel, recordedRevenue, sampleConfidence, useApp } from "@/lib/app-store";
 
-const NAVY = "#0B1526";
-const NAVY_2 = "#14243A";
-const CYAN = "#25C7CE";
+const NAVY = "#1D6FA1";
+const NAVY_2 = "#2F85B5";
+const CYAN = "#63E5F0";
 const MINT = "#5FE0AF";
 const AMBER = "#F5B84B";
 const RED = "#F07878";

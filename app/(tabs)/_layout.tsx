@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { design } from "@/constants/design";
 
 export default function TabLayout() {
   const colors = useColors();
@@ -14,11 +15,11 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
+        tabBarActiveTintColor: design.colors.blue,
         tabBarInactiveTintColor: colors.muted,
         tabBarButton: HapticTab,
-        tabBarStyle: { height: 58 + bottomPadding, paddingTop: 7, paddingBottom: bottomPadding, backgroundColor: colors.surface, borderTopColor: colors.border },
-        tabBarLabelStyle: { fontSize: 10, fontWeight: "700" },
+        tabBarStyle: { height: 62 + bottomPadding, paddingTop: 8, paddingBottom: bottomPadding, backgroundColor: `${colors.surface}F5`, borderTopColor: colors.border, shadowColor: "#93A5BA", shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: -5 }, elevation: 12 },
+        tabBarLabelStyle: { fontSize: 10, fontWeight: "800", letterSpacing: 0.1 },
       }}
     >
       <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color }) => <IconSymbol size={23} name="house.fill" color={color} /> }} />
