@@ -1,5 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Appearance, View, useColorScheme as useSystemColorScheme } from "react-native";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Animated, Appearance, Easing, View, useColorScheme as useSystemColorScheme } from "react-native";
 import { colorScheme as nativewindColorScheme, vars } from "nativewind";
 
 import { SchemeColors, type ColorScheme } from "@/constants/theme";
@@ -17,10 +17,28 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { mode } = useAppearance();
   const requestedScheme: ColorScheme = mode === "dim" ? "dark" : mode === "light" ? "light" : systemScheme;
   const [colorScheme, setColorSchemeState] = useState<ColorScheme>(requestedScheme);
+  const [transitionColor, setTransitionColor] = useState(SchemeColors[requestedScheme].background);
+  const transitionOpacity = useRef(new Animated.Value(0)).current;
+  const hasMounted = useRef(false);
 
   useEffect(() => {
+    if (!hasMounted.current) {
+      hasMounted.current = true;
+      setColorSchemeState(requestedScheme);
+      return;
+    }
+    if (requestedScheme === colorScheme) return;
+    setTransitionColor(SchemeColors[colorScheme].background);
     setColorSchemeState(requestedScheme);
-  }, [requestedScheme]);
+    transitionOpacity.stopAnimation();
+    transitionOpacity.setValue(1);
+    Animated.timing(transitionOpacity, {
+      toValue: 0,
+      duration: 240,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [requestedScheme, colorScheme, transitionOpacity]);
 
   const applyScheme = useCallback((scheme: ColorScheme) => {
     nativewindColorScheme.set(scheme);
@@ -70,7 +88,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
   return (
     <ThemeContext.Provider value={value}>
-      <View style={[{ flex: 1 }, themeVariables]}>{children}</View>
+      <View style={[{ flex: 1 }, themeVariables]}>
+        {children}
+        <Animated.View
+          pointerEvents="none"
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundColor: transitionColor,
+            opacity: transitionOpacity,
+          }}
+        />
+      </View>
     </ThemeContext.Provider>
   );
 }
