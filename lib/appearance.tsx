@@ -67,7 +67,7 @@ export const appearanceLabels = {
 } as const;
 
 export function accentTone(hex: string, intensity: AccentIntensity) {
-  const amount = intensity === "soft" ? 0.58 : intensity === "balanced" ? 0.28 : 0;
+  const amount = intensity === "soft" ? 0.35 : intensity === "balanced" ? 0.12 : 0;
   if (!amount || !/^#[0-9a-f]{6}$/i.test(hex)) return hex;
   const channel = (offset: number) => Math.round(parseInt(hex.slice(offset, offset + 2), 16) + (255 - parseInt(hex.slice(offset, offset + 2), 16)) * amount).toString(16).padStart(2, "0");
   return `#${channel(1)}${channel(3)}${channel(5)}`;

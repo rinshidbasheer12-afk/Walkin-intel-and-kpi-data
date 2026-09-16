@@ -9,6 +9,10 @@ describe("appearance settings", () => {
     expect(accentTone("#5A8FF2", "soft")).toMatch(/^#[0-9a-f]{6}$/i);
   });
 
+  it("keeps balanced accents closer to the source colour than soft accents", () => {
+    expect(accentTone("#5A8FF2", "balanced")).not.toBe(accentTone("#5A8FF2", "soft"));
+  });
+
   it("exposes an ordered density scale", () => {
     expect(densityTokens.compact.cardPadding).toBeLessThan(densityTokens.comfortable.cardPadding);
     expect(densityTokens.comfortable.cardPadding).toBeLessThan(densityTokens.airy.cardPadding);
