@@ -61,4 +61,13 @@ describe("CycleIntel data model", () => {
     expect(reasons[0].value).toBeGreaterThanOrEqual(reasons[reasons.length - 1].value);
     expect(reasons.reduce((sum, row) => sum + row.value, 0)).toBe(state.walkIns.filter((row) => !row.sold).length);
   });
+
+  it("provides category-level rows for evidence-based visual summaries", () => {
+    const state = createDemoState();
+    const road = state.walkIns.filter((row) => row.category === "Road");
+    const sold = road.filter((row) => row.sold);
+    expect(road.length).toBeGreaterThan(0);
+    expect(sold.length).toBeLessThanOrEqual(road.length);
+    expect(sold.reduce((sum, row) => sum + (row.budget ?? 0), 0)).toBeGreaterThan(0);
+  });
 });
