@@ -21,11 +21,11 @@ export default function TabLayout() {
         tabBarActiveTintColor: design.colors.blue,
         tabBarInactiveTintColor: colors.muted,
         tabBarActiveBackgroundColor: light ? "#FFFFFFB8" : `${colors.foreground}18`,
-        tabBarButton: HapticTab,
         tabBarPosition: desktop ? "left" : "bottom",
         tabBarVariant: desktop ? "material" : "uikit",
         tabBarStyle: desktop ? { width: 220, paddingTop: 28, paddingBottom: 28, paddingHorizontal: 12, backgroundColor: light ? `${design.colors.mist}E8` : `${colors.surface}E8`, borderRightColor: `${colors.border}CC`, borderRightWidth: 1, borderTopColor: light ? "#FFFFFFF2" : `${colors.foreground}22`, borderTopWidth: 1, shadowColor: light ? "#60708C" : "#000000", shadowOpacity: 0.14, shadowRadius: 24, shadowOffset: { width: 6, height: 0 }, elevation: 8 } : { height: 68 + bottomPadding, paddingTop: 10, paddingBottom: bottomPadding, backgroundColor: `${colors.surface}F2`, borderTopColor: light ? "#FFFFFFF2" : `${colors.border}CC`, borderTopWidth: 1, shadowColor: light ? "#60708C" : "#000000", shadowOpacity: 0.14, shadowRadius: 22, shadowOffset: { width: 0, height: -6 }, elevation: 10 },
-        tabBarLabelStyle: { fontSize: 9, fontWeight: "800", letterSpacing: 0 },
+         tabBarItemStyle: { minWidth: 0, paddingHorizontal: 0 },
+         tabBarLabelStyle: { fontSize: width < 430 ? 8 : 9, fontWeight: "800", letterSpacing: 0 },
       }}
     >
       <Tabs.Screen name="index" options={{ title: "Home", tabBarIcon: ({ color }) => <IconSymbol size={23} name="house.fill" color={color} /> }} />
