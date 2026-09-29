@@ -30,19 +30,26 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  const allowedOrigins = new Set(
+    (process.env.CORS_ORIGINS || "http://localhost:3000,http://127.0.0.1:3000")
+      .split(",")
+      .map((o) => o.trim())
+      .filter((o) => o.length > 0 && o !== "null"),
+  );
 
-  // Enable CORS for all routes - reflect the request origin to support credentials
+  // Enable CORS for trusted origins only (required when credentials are allowed)
   app.use((req, res, next) => {
-    const origin = req.headers.origin;
-    if (origin) {
+    const origin = typeof req.headers.origin === "string" ? req.headers.origin : undefined;
+    res.header("Vary", "Origin");
+    if (origin && origin !== "null" && allowedOrigins.has(origin)) {
       res.header("Access-Control-Allow-Origin", origin);
+      res.header("Access-Control-Allow-Credentials", "true");
     }
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     res.header(
       "Access-Control-Allow-Headers",
       "Origin, X-Requested-With, Content-Type, Accept, Authorization",
     );
-    res.header("Access-Control-Allow-Credentials", "true");
 
     // Handle preflight requests
     if (req.method === "OPTIONS") {
