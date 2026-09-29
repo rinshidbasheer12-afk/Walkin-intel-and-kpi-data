@@ -74,7 +74,7 @@ export async function getUserInfo(): Promise<User | null> {
 
     let info: string | null = null;
     if (Platform.OS === "web") {
-      // Use localStorage for web
+      // Use localStorage for web (store only a non-sensitive subset)
       info = window.localStorage.getItem(USER_INFO_KEY);
     } else {
       // Use SecureStore for native
@@ -85,7 +85,20 @@ export async function getUserInfo(): Promise<User | null> {
       console.log("[Auth] No user info found");
       return null;
     }
-    const user = JSON.parse(info);
+    const parsed = JSON.parse(info);
+    const user: User = Platform.OS === "web"
+      ? {
+          id: parsed.id,
+          openId: "",
+          name: parsed.name ?? null,
+          email: null,
+          loginMethod: null,
+          lastSignedIn: new Date(parsed.lastSignedIn || Date.now()),
+        }
+      : {
+          ...parsed,
+          lastSignedIn: new Date(parsed.lastSignedIn),
+        };
     console.log("[Auth] User info retrieved:", user);
     return user;
   } catch (error) {
@@ -99,9 +112,14 @@ export async function setUserInfo(user: User): Promise<void> {
     console.log("[Auth] Setting user info...", user);
 
     if (Platform.OS === "web") {
-      // Use localStorage for web
-      window.localStorage.setItem(USER_INFO_KEY, JSON.stringify(user));
-      console.log("[Auth] User info stored in localStorage successfully");
+      // Use localStorage for web (avoid persisting sensitive fields in clear text)
+      const webSafeUser = {
+        id: user.id,
+        name: user.name,
+        lastSignedIn: user.lastSignedIn,
+      };
+      window.localStorage.setItem(USER_INFO_KEY, JSON.stringify(webSafeUser));
+      console.log("[Auth] Sanitized user info stored in localStorage successfully");
       return;
     }
 
