@@ -2,6 +2,72 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import { SESSION_TOKEN_KEY, USER_INFO_KEY } from "@/constants/oauth";
 
+const WEB_USER_INFO_CRYPTO_PREFIX = "enc:v1:";
+
+async function getWebUserInfoCryptoKey(): Promise<CryptoKey> {
+  const encoder = new TextEncoder();
+  const keyMaterial = await window.crypto.subtle.digest("SHA-256", encoder.encode(USER_INFO_KEY));
+  return window.crypto.subtle.importKey(
+    "raw",
+    keyMaterial,
+    { name: "AES-GCM" },
+    false,
+    ["encrypt", "decrypt"],
+  );
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  let binary = "";
+  bytes.forEach((b) => {
+    binary += String.fromCharCode(b);
+  });
+  return btoa(binary);
+}
+
+function base64ToBytes(base64: string): Uint8Array {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+async function encryptWebUserInfo(plainText: string): Promise<string> {
+  const key = await getWebUserInfoCryptoKey();
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encoder = new TextEncoder();
+  const cipherBuffer = await window.crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    encoder.encode(plainText),
+  );
+  const cipherBytes = new Uint8Array(cipherBuffer);
+  return `${WEB_USER_INFO_CRYPTO_PREFIX}${bytesToBase64(iv)}.${bytesToBase64(cipherBytes)}`;
+}
+
+async function decryptWebUserInfo(payload: string): Promise<string> {
+  if (!payload.startsWith(WEB_USER_INFO_CRYPTO_PREFIX)) {
+    return payload;
+  }
+
+  const raw = payload.slice(WEB_USER_INFO_CRYPTO_PREFIX.length);
+  const [ivB64, cipherB64] = raw.split(".");
+  if (!ivB64 || !cipherB64) {
+    throw new Error("Invalid encrypted user info payload");
+  }
+
+  const key = await getWebUserInfoCryptoKey();
+  const iv = base64ToBytes(ivB64);
+  const cipherBytes = base64ToBytes(cipherB64);
+  const plainBuffer = await window.crypto.subtle.decrypt(
+    { name: "AES-GCM", iv },
+    key,
+    cipherBytes,
+  );
+  return new TextDecoder().decode(plainBuffer);
+}
+
 export type User = {
   id: number;
   openId: string;
@@ -74,8 +140,9 @@ export async function getUserInfo(): Promise<User | null> {
 
     let info: string | null = null;
     if (Platform.OS === "web") {
-      // Use localStorage for web (store only a non-sensitive subset)
-      info = window.localStorage.getItem(USER_INFO_KEY);
+      // Use localStorage for web, but keep persisted payload encrypted
+      const stored = window.localStorage.getItem(USER_INFO_KEY);
+      info = stored ? await decryptWebUserInfo(stored) : null;
     } else {
       // Use SecureStore for native
       info = await SecureStore.getItemAsync(USER_INFO_KEY);
@@ -118,7 +185,8 @@ export async function setUserInfo(user: User): Promise<void> {
         name: user.name,
         lastSignedIn: user.lastSignedIn,
       };
-      window.localStorage.setItem(USER_INFO_KEY, JSON.stringify(webSafeUser));
+      const encryptedUserInfo = await encryptWebUserInfo(JSON.stringify(webSafeUser));
+      window.localStorage.setItem(USER_INFO_KEY, encryptedUserInfo);
       console.log("[Auth] Sanitized user info stored in localStorage successfully");
       return;
     }
