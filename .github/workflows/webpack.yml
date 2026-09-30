@@ -23,3 +23,6 @@ steps:
     npm install
     npm install -D webpack-cli
     npx webpack
+npm install -g pnpm@9.12.0
+cd Walkin-intel-and-kpi-data
+pnpm install
