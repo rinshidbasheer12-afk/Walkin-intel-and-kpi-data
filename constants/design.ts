@@ -21,6 +21,13 @@ export const design = {
     green: ["#E8FAF1", "#EDF8FF"],
   },
   radius: { sm: 10, md: 14, lg: 20, xl: 28, pill: 999 },
+  sizing: {
+    metricCard: 123,
+    kpiCard: 136,
+    categoryCard: 184,
+    performerCard: 132,
+    employeeCard: 286,
+  },
   spacing: { xs: 6, sm: 10, md: 14, lg: 18, xl: 24, xxl: 32 },
   shadow: { color: "#9AAAC0", opacity: 0.12, radius: 22, y: 8 },
   typography: {
