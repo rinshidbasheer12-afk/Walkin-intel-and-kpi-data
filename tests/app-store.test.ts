@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { CATEGORIES, conversionRate, createDemoState, dateKey, inRange, lossReasonRows, recordedRevenue, sampleConfidence, toCsv } from "../lib/app-store";
+import { CATEGORIES, conversionRate, createDemoState, dateKey, deleteAllEmployeeData, inRange, lossReasonRows, recordedRevenue, sampleConfidence, toCsv } from "../lib/app-store";
 
 describe("CycleIntel data model", () => {
   it("seeds a realistic demo workspace with distinct entities", () => {
@@ -69,5 +69,15 @@ describe("CycleIntel data model", () => {
     expect(road.length).toBeGreaterThan(0);
     expect(sold.length).toBeLessThanOrEqual(road.length);
     expect(sold.reduce((sum, row) => sum + (row.budget ?? 0), 0)).toBeGreaterThan(0);
+  });
+
+  it("cascades employee deletion to linked walk-ins and follow-ups while preserving bikes", () => {
+    const state = createDemoState();
+    const result = deleteAllEmployeeData(state);
+    expect(result.staff).toHaveLength(0);
+    expect(result.walkIns).toHaveLength(0);
+    expect(result.followUps).toHaveLength(0);
+    expect(result.bikes).toEqual(state.bikes);
+    expect(result.isDemo).toBe(false);
   });
 });

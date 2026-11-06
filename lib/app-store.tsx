@@ -35,7 +35,7 @@ export type WalkIn = {
 };
 export type FollowUp = { id: string; walkInId: string; dueDate: string; status: FollowUpStatus; note: string; createdAt: string };
 
-type AppState = { walkIns: WalkIn[]; followUps: FollowUp[]; staff: Staff[]; bikes: Bike[]; isDemo: boolean };
+export type AppState = { walkIns: WalkIn[]; followUps: FollowUp[]; staff: Staff[]; bikes: Bike[]; isDemo: boolean };
 
 type AppContextValue = AppState & {
   hydrated: boolean;
@@ -45,6 +45,7 @@ type AppContextValue = AppState & {
   addStaff: (name: string, role?: "Admin" | "Staff") => void;
   addEmployee: (employee: Omit<Staff, "id" | "joinedAt"> & { joinedAt?: string }) => void;
   updateEmployee: (id: string, patch: Partial<Omit<Staff, "id">>) => void;
+  deleteAllEmployeeData: () => void;
   addBike: (bike: Omit<Bike, "id">) => void;
   importCsv: (csv: string) => { imported: number; skipped: number };
   clearDemoData: () => void;
@@ -190,6 +191,18 @@ export function createDemoState(): AppState {
   return { ...seeded, staff: demoStaff, bikes: demoBikes, isDemo: true };
 }
 
+export function deleteAllEmployeeData(state: AppState): AppState {
+  const employeeIds = new Set(state.staff.map((person) => person.id));
+  const deletedWalkInIds = new Set(state.walkIns.filter((row) => employeeIds.has(row.staffId)).map((row) => row.id));
+  return {
+    ...state,
+    staff: [],
+    walkIns: state.walkIns.filter((row) => !deletedWalkInIds.has(row.id)),
+    followUps: state.followUps.filter((item) => !deletedWalkInIds.has(item.walkInId)),
+    isDemo: false,
+  };
+}
+
 function parseCsvLine(line: string) {
   const result: string[] = [];
   let current = "";
@@ -277,6 +290,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     addStaff: (name, role = "Staff") => setState((prev) => ({ ...prev, staff: [...prev.staff, { id: uid("staff"), name: name.trim(), role, active: true, joinedAt: dateKey(new Date()) }], isDemo: false })),
     addEmployee: (employee) => setState((prev) => ({ ...prev, staff: [...prev.staff, { ...employee, id: uid("staff"), joinedAt: employee.joinedAt ?? dateKey(new Date()), active: employee.status ? employee.status === "Active" : employee.active }], isDemo: false })),
     updateEmployee: (id, patch) => setState((prev) => ({ ...prev, staff: prev.staff.map((person) => person.id === id ? { ...person, ...patch, active: patch.status ? patch.status === "Active" : patch.active ?? person.active } : person), isDemo: false })),
+    deleteAllEmployeeData: () => setState((prev) => deleteAllEmployeeData(prev)),
     addBike: (bike) => setState((prev) => ({ ...prev, bikes: [...prev.bikes, { ...bike, id: uid("bike") }], isDemo: false })),
     importCsv: (csv) => {
       const lines = csv.split(/\r?\n/).filter(Boolean);
